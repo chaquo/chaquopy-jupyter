@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.chaquo.python'
+
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 26
+
+        applicationId "com.chaquo.python.jupyter"
+        versionName rootProject.version
+        def verParsed = rootProject.version.split(/\./).collect { Integer.parseInt(it) }
+        versionCode ((verParsed[0] * 1000000) + (verParsed[1] * 1000) + (verParsed[2] * 10) + 0)
+
+        python {
+            pip {
+                options "--index-url", "https://pypi.org/simple"  // Disable chaquo.com index.
+                options "--extra-index-url", "../../../server/pypi/dist"
+                install "notebook"
+                install "matplotlib"
+                install "elasticsearch"
+                install "h5py"  // For Keras model files.
+                install "json-rpc"
+                install "numpy"
+                install "opencv-python"
+                install "pandas"
+                install "pillow"  // For image files.
+                install "scipy"
+                install "six"
+                install "tensorflow"
+            }
+            extractPackages "parso"
+        }
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+    }
+
+    sourceSets {
+        def demoSrc = "../../../demo/app/src"
+        main {
+            java {
+                srcDirs = ["$demoSrc/main/java"]
+                includes = ["**/App.java", "**/MainActivity.java",
+                            "**/PythonTestActivity.java", "**/ReplActivity.java",
+                            "com/chaquo/python/utils/**"]
+            }
+            python { srcDir "$demoSrc/main/python" }
+            res { srcDirs = ["$demoSrc/main/res"] }
+        }
+    }
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "android.arch.lifecycle:extensions:1.1.0"
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:preference-v14:26.1.0'
+    testImplementation 'junit:junit:4.12'
+}

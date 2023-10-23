@@ -1,0 +1,6 @@
+<!-- Using a build variant source set so we can override the imported main source set -->
+<resources>
+    <string name="app_id">com.chaquo.python.jupyter</string>
+    <string name="app_name">Jupyter launcher</string>
+    <string name="main_caption">Touch below to start the server.</string>
+</resources>
